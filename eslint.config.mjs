@@ -1,57 +1,28 @@
-import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import prettier from 'eslint-plugin-prettier';
+import eslint from '@eslint/js';
+import prettier from 'eslint-plugin-prettier/recommended';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import tseslint from 'typescript-eslint';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default [
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  prettier,
   {
-    plugins: {
-      prettier,
-    },
-
-    rules: {},
-  },
-  ...compat.extends('eslint:recommended', 'prettier').map(config => ({
-    ...config,
-    files: ['**/*.ts', '**/*.tsx', '**/.js', '**/.jsx'],
-  })),
-  {
-    files: ['**/*.ts', '**/*.tsx', '**/.js', '**/.jsx'],
-
     languageOptions: {
-      ecmaVersion: 5,
-      sourceType: 'script',
-
       parserOptions: {
-        // project: ['./tsconfig.app.json'],
         project: './tsconfig.eslint.json',
-
         tsconfigRootDir: __dirname,
       },
     },
-
     rules: {
       'max-params': ['warn', 5],
-
       'max-lines-per-function': [
         'warn',
-        {
-          max: 60,
-          skipComments: true,
-          skipBlankLines: true,
-          IIFEs: true,
-        },
+        { max: 60, skipComments: true, skipBlankLines: true, IIFEs: true },
       ],
-
       'no-await-in-loop': 'warn',
       'no-console': 'off',
       'no-duplicate-imports': 'off',
@@ -69,62 +40,14 @@ export default [
       complexity: 'warn',
       'no-confusing-arrow': 'warn',
       'no-negated-condition': 'warn',
-    },
-  },
-  ...compat
-    .extends(
-      'plugin:@typescript-eslint/eslint-recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:@typescript-eslint/recommended-requiring-type-checking',
-      'prettier'
-    )
-    .map(config => ({
-      ...config,
-      files: ['**/*.ts', '**/*.tsx'],
-    })),
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-
-    languageOptions: {
-      ecmaVersion: 5,
-      sourceType: 'script',
-
-      parserOptions: {
-        project: ['./tsconfig.eslint.json'],
-      },
-    },
-
-    rules: {
       'no-empty': 'error',
       'no-empty-function': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'warn',
-
-      '@typescript-eslint/no-empty-function': [
-        'error',
-        {
-          allow: ['constructors'],
-        },
-      ],
-
-      quotes: [
-        'error',
-        'single',
-        {
-          allowTemplateLiterals: true,
-          avoidEscape: true,
-        },
-      ],
-
+      '@typescript-eslint/no-empty-function': ['error', { allow: ['constructors'] }],
+      quotes: ['error', 'single', { allowTemplateLiterals: true, avoidEscape: true }],
       '@typescript-eslint/no-unused-vars': ['warn'],
-
-      '@typescript-eslint/explicit-function-return-type': [
-        'warn',
-        {
-          allowExpressions: true,
-        },
-      ],
-
+      '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true }],
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
@@ -140,4 +63,7 @@ export default [
       '@typescript-eslint/unbound-method': 'warn',
     },
   },
-];
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
+);

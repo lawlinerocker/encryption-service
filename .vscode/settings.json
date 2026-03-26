@@ -28,5 +28,10 @@
     "source.organizeImports": "always"
   },
 
-  "conventionalCommits.scopes": []
+  "conventionalCommits.scopes": [],
+
+  "eslint.useFlatConfig": true,
+  "eslint.run": "onType",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": [{ "mode": "auto" }]
 }
